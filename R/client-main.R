@@ -11,6 +11,7 @@
 # - deposit_delete_file
 # - deposit_download_file
 # - deposit_embargo
+# - deposit_restricted
 # - deposit_fill_metadata
 # - deposit_new
 # - deposit_prereserve_doi
@@ -581,6 +582,47 @@ depositsClient <- R6::R6Class ( # nolint (not snake_case)
             embargo_date <- strftime (embargo_date, "%Y-%m-%d")
 
             self <- private$set_embargo (embargo_date)
+
+            invisible (self)
+        },
+
+        #' @description Embargo a deposit prior to publication.
+        #' @param embargo_date Date of expiry of embargo. If the
+        #' `deposit_publish()` method has been called, deposit will
+        #' automatically be published after this date, and will not be
+        #' published, nor publicly accessible, prior to this date.
+        #' @param embargo_type For Figshare service only, which allows embargoes
+        #' for entire deposits or single files. Ignored for other services.
+        #' @param embargo_reason For Figshare service only, an optional text
+        #' string describing reasons for embargo.
+        #' @return (Invisibly) Updated deposits client with additional embargo
+        #' information.
+
+        deposit_restricted = function (access_right = c("restricted"),
+                                    access_conditions = NULL) {
+
+            if (is.null (self$id)) {
+                stop (
+                    "Client not associated with any deposit which can ",
+                    "be restricted. Please first use `deposit_new()` ",
+                    "or `deposit_retrieve()` methods.",
+                    call. = FALSE
+                )
+            }
+
+            # Re-generate service metadata from DCMI:
+            metadata <- validate_metadata (
+                self$metadata,
+                gsub ("\\-sandbox$", "", self$service)
+            )
+            metadata <- httptest2_created_timestamp (metadata)
+            self$metadata <- metadata$dcmi
+            private$metadata_service <- metadata$service
+
+            checkmate::assert_character (access_right, len = 1L)
+            checkmate::assert_character (access_conditions, len = 1L)
+
+            self <- private$set_restricted (embargo_date)
 
             invisible (self)
         },
