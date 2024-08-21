@@ -622,7 +622,7 @@ depositsClient <- R6::R6Class ( # nolint (not snake_case)
             checkmate::assert_character (access_right, len = 1L)
             checkmate::assert_character (access_conditions, len = 1L)
 
-            self <- private$set_restricted (embargo_date)
+            self <- private$set_restricted (access_conditions)
 
             invisible (self)
         },
