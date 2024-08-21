@@ -7,10 +7,10 @@
 # ----------------- Restricted METHODS -----------------
 # ---------------------------------------------------
 
-#' @description Method to set embargo date
+#' @description Method to set restricted access
 #'
-#' @param embargo_date Date of expiry for embargo.
-#' @return Updated client with embargo metadata
+#' @param access_conditions Conditions for accessing data
+#' @return Updated client with restricted metadata
 #' @noRd
 
 depositsClient$set ("private", "set_restricted", function (access_conditions) {
