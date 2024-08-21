@@ -58,7 +58,7 @@ depositsClient$set ("private", "restrict_zenodo", function ( access_conditions) 
 
     } else {
 
-        if (!s_meta$access_right %in% c ("closed", "embargoed")) {
+        if (!s_meta$access_right %in% c ("closed","open", "embargoed")) {
             stop (
                 "deposit already has 'access_right' = [",
                 s_meta$access_right, "]",
